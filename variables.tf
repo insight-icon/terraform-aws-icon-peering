@@ -2,7 +2,7 @@ variable "environment" {
   type = string
 }
 
-variable "route_table_id" {
+variable "acceptor_vpc_id" {
   type = string
 }
 
@@ -14,10 +14,6 @@ variable "acceptor_vpc_cidr_block" {
 }
 
 variable "requestor_vpc_id" {
-  type = string
-}
-
-variable "acceptor_vpc_id" {
   type = string
 }
 
