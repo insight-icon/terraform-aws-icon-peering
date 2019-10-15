@@ -16,6 +16,23 @@ locals {
   tags = merge(var.tags, local.common_tags)
 }
 
+data "aws_vpc" "acceptor" {
+  id = var.acceptor_vpc_id
+}
+
+data "aws_vpc" "requestor" {
+  id = var.requestor_vpc_id
+}
+
+data "aws_route_tables" "acceptor" {
+  vpc_id = var.acceptor_vpc_id
+}
+
+data "aws_route_tables" "requestor" {
+  vpc_id = var.requestor_vpc_id
+}
+
+
 resource "aws_vpc_peering_connection" "this" {
   vpc_id = var.requestor_vpc_id
   peer_vpc_id = var.acceptor_vpc_id
@@ -36,15 +53,21 @@ resource "aws_vpc_peering_connection" "this" {
 
 # Create routes from requestor to acceptor
 resource "aws_route" "requestor" {
-  route_table_id            = var.requestor_route_table_id
-  destination_cidr_block    = var.acceptor_vpc_cidr_block
+  count = length(data.aws_route_tables.requestor.ids)
+
+  route_table_id = tolist(data.aws_route_tables.requestor.ids)[count.index]
+
+  destination_cidr_block = data.aws_vpc.acceptor.cidr_block
   vpc_peering_connection_id = aws_vpc_peering_connection.this.id
 }
 
 # Create routes from acceptor to requestor
 resource "aws_route" "acceptor" {
-  route_table_id            = var.acceptor_route_table_id
-  destination_cidr_block    = var.requestor_vpc_cidr_block
+  count = length(data.aws_route_tables.requestor.ids)
+
+  route_table_id = tolist(data.aws_route_tables.acceptor.ids)[count.index]
+
+  destination_cidr_block = data.aws_vpc.requestor.cidr_block
   vpc_peering_connection_id = aws_vpc_peering_connection.this.id
 }
 

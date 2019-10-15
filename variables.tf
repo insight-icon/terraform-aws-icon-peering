@@ -6,22 +6,7 @@ variable "acceptor_vpc_id" {
   type = string
 }
 
-variable "acceptor_route_table_id" {
-  type = string
-}
-variable "acceptor_vpc_cidr_block" {
-  type = string
-}
-
 variable "requestor_vpc_id" {
-  type = string
-}
-
-variable "requestor_route_table_id" {
-  type = string
-}
-
-variable "requestor_vpc_cidr_block" {
   type = string
 }
 
